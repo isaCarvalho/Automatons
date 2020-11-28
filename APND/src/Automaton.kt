@@ -5,7 +5,7 @@ class Automaton(private val states : Array<Int>, private val finalStates : Array
     private val pileAlphabet = arrayOf('I', 'A')
     private val initialState : Int = states[0]
     private val initialSymbol = pileAlphabet[0]
-    private val pile : Pile = Pile(initialSymbol)
+    private val stack : Stack = Stack(initialSymbol)
 
     fun checkChain(chain : String, actualState : Int = initialState) : Boolean {
 
@@ -15,7 +15,7 @@ class Automaton(private val states : Array<Int>, private val finalStates : Array
 
         // if we are at the last char in the chain, it has to be a final state
         if (chain.isEmpty() ){
-            if (finalStates.contains(actualState) && pile.pop() == initialSymbol)
+            if (finalStates.contains(actualState) && stack.pop() == initialSymbol)
                 return true
 
             // checks if the chain is empty but we can go with e to some final state
@@ -25,7 +25,7 @@ class Automaton(private val states : Array<Int>, private val finalStates : Array
                     return true
             }
 
-            if (!finalStates.contains(actualState) || pile.pop() != initialSymbol)
+            if (!finalStates.contains(actualState) || stack.pop() != initialSymbol)
                 return false
         }
 
@@ -38,17 +38,17 @@ class Automaton(private val states : Array<Int>, private val finalStates : Array
 
             rulesByState.forEach {
                 // removes the last pile char just to consult, and puts it back
-                val pileChar = pile.pop()
-                pile.push(pileChar.toString())
+                val pileChar = stack.pop()
+                stack.push(pileChar.toString())
 
                 if (it.char == letter && pileChar == it.pileChar) {
-                    pile.pop()
-                    pile.push(it.chain)
+                    stack.pop()
+                    stack.push(it.chain)
                     isAccepted = checkChain(chain.substring(1), it.nextState)
                 }
                 else if (it.char == ' ' && pileChar == it.pileChar) {
-                    pile.pop()
-                    pile.push(it.chain)
+                    stack.pop()
+                    stack.push(it.chain)
                     isAccepted = checkChain(chain, it.nextState)
                 }
 

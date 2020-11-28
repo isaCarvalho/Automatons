@@ -1,25 +1,25 @@
-class Pile(private val initialSymbol : Char)
+class Stack(private val initialSymbol : Char)
 {
-    private val pile = ArrayList<Char>()
+    private val stack = ArrayList<Char>()
 
     init {
-        pile.add(initialSymbol)
+        stack.add(initialSymbol)
     }
 
     // Adds the symbol right to left
     fun push(chain : String) {
         val array = chain.reversed().toCharArray()
         array.forEach {
-            pile.add(it)
+            stack.add(it)
         }
     }
 
     // takes the last character and returns it
     fun pop() : Char {
-        val index = pile.size - 1
-        val lastChar = pile[index]
+        val index = stack.size - 1
+        val lastChar = stack[index]
 
-        pile.removeAt(index)
+        stack.removeAt(index)
         return lastChar
     }
 }

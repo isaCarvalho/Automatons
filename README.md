@@ -19,7 +19,7 @@ fun main() {
 }
 ```
 
-## Pile automaton non-deterministc algorithm
+## Pushdown automaton non-deterministc algorithm
 
 ```kotlin
 fun main() {
