@@ -1,0 +1,1 @@
+class Rule(val firstState : Int, val char : Char, val pileChar : Char, val nextState : Int, val chain : String)
