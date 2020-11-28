@@ -15,7 +15,7 @@ fun main() {
     val automaton = Automaton(arrayOf(1, 2), arrayOf(2), rules)
     val chain = "aabb"
 
-    println(automaton.checkChain(chain, 1))
+    println("Automaton: ${automaton.checkChain(chain, 1)}")
 }
 ```
 
@@ -36,6 +36,6 @@ fun main() {
     var automaton = Automaton(arrayOf(1, 2, 3, 4), arrayOf(4), rules)
     var chain = "aaaabb"
 
-    println("First automaton: ${automaton.checkChain(chain)}")
+    println("Automaton: ${automaton.checkChain(chain)}")
 }
 ```

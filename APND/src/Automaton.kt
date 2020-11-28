@@ -38,15 +38,15 @@ class Automaton(private val states : Array<Int>, private val finalStates : Array
 
             rulesByState.forEach {
                 // removes the last pile char just to consult, and puts it back
-                val pileChar = stack.pop()
-                stack.push(pileChar.toString())
+                val stackChar = stack.pop()
+                stack.push(stackChar.toString())
 
-                if (it.char == letter && pileChar == it.pileChar) {
+                if (it.char == letter && stackChar == it.stackChar) {
                     stack.pop()
                     stack.push(it.chain)
                     isAccepted = checkChain(chain.substring(1), it.nextState)
                 }
-                else if (it.char == ' ' && pileChar == it.pileChar) {
+                else if (it.char == ' ' && stackChar == it.stackChar) {
                     stack.pop()
                     stack.push(it.chain)
                     isAccepted = checkChain(chain, it.nextState)
