@@ -9,8 +9,12 @@ fun main() {
     val automaton = Automaton(arrayOf(1, 2, 3), arrayOf(2), rules)
     automaton.printAutomaton()
 
-    println("\n===============================================================\n")
+    val convertedAutomaton = Converter(automaton)
+            .removeETransitions()
+            .printAutomaton()
+            .assembleStatesTable()
+            .printStatesTable()
+            .convert()
+            .printAutomaton()
 
-    val newAutomaton = Converter(automaton).removeETransitions()
-    newAutomaton.printAutomaton()
 }
