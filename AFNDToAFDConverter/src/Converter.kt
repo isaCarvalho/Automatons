@@ -121,12 +121,16 @@ class Converter(private var automaton: Automaton)
 
             val stateGoingToA = it.goingToA.joinToString(",")
             val stateGoingToB = it.goingToB.joinToString(",")
-            if (it.state.isNotEmpty() && stateGoingToA.isNotEmpty() && stateGoingToB.isNotEmpty()) {
-                var rule = Rule(it.state, 'a', stateGoingToA)
-                automatonRules.add(rule)
+            if (it.state.isNotEmpty()) {
+                if (stateGoingToA.isNotEmpty()) {
+                    val rule = Rule(it.state, 'a', stateGoingToA)
+                    automatonRules.add(rule)
+                }
 
-                rule = Rule(it.state, 'b', stateGoingToB)
-                automatonRules.add(rule)
+                if (stateGoingToB.isNotEmpty()) {
+                    val rule = Rule(it.state, 'b', stateGoingToB)
+                    automatonRules.add(rule)
+                }
             }
         }
 
