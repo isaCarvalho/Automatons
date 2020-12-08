@@ -1,4 +1,4 @@
-class StateTableItem(val state : String, val goingToA : MutableSet<Int>, val goingToB : MutableSet<Int>)
+class StateTableItem(val state : String, val goingToA : MutableSet<String>, val goingToB : MutableSet<String>)
 {
     fun getNewState(goingToA : Boolean = true) : String {
         return if (goingToA)

@@ -1,6 +1,6 @@
-class Automaton(private val states : Array<Int>, private val finalStates : Array<Int>, private val rules : Array<Rule>) {
+class Automaton(private val states : Array<String>, private val finalStates : Array<String>, private var rules : Array<Rule>) {
     private val alphabet = arrayOf(' ', 'a', 'b')
-    private var initialState = -1
+    private var initialState = "-1"
 
     init {
         initialState = states[0]
@@ -12,7 +12,7 @@ class Automaton(private val states : Array<Int>, private val finalStates : Array
 
     fun getStates() = states
 
-    fun getRulesByState(state : Int) : Array<Rule> {
+    fun getRulesByState(state : String) : Array<Rule> {
         val rulesByState = ArrayList<Rule>()
         rules.forEach {
             if (it.firstState == state)
@@ -23,6 +23,7 @@ class Automaton(private val states : Array<Int>, private val finalStates : Array
     }
 
     fun printAutomaton() {
+        println("\n===============================================================\n")
         println("Alphabet: {e, ${alphabet[1]}, ${alphabet[2]}}")
         print("States: {")
 

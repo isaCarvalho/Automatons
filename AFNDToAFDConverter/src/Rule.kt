@@ -1,1 +1,1 @@
-class Rule(val firstState : Int, val char : Char, val nextState : Int)
+class Rule(val firstState : String, val char : Char, val nextState : String)

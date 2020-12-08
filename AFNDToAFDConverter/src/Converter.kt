@@ -1,7 +1,20 @@
 class Converter(private var automaton: Automaton)
 {
+    private val newFinalStates = mutableSetOf<String>()
+    private val newStates = mutableSetOf<String>()
+
     private val stateTable : StateTable by lazy {
         StateTable()
+    }
+
+    init {
+        automaton.getFinalStates().forEach {
+            newFinalStates.add(it)
+        }
+
+        automaton.getStates().forEach {
+            newStates.add(it)
+        }
     }
 
     fun removeETransitions() : Converter {
@@ -34,7 +47,6 @@ class Converter(private var automaton: Automaton)
     }
 
     fun printAutomaton() : Converter {
-        println("\n===============================================================\n")
         automaton.printAutomaton()
 
         return this
@@ -44,7 +56,7 @@ class Converter(private var automaton: Automaton)
         automaton.getStates().forEach {
             val rulesByState = automaton.getRulesByState(it)
 
-            val stateItem = StateTableItem(it.toString(), mutableSetOf<Int>(), mutableSetOf<Int>())
+            val stateItem = StateTableItem(it, mutableSetOf(), mutableSetOf())
             rulesByState.forEach {rule ->
                 if (rule.char == 'a')
                     stateItem.goingToA.add(rule.nextState)
@@ -68,21 +80,111 @@ class Converter(private var automaton: Automaton)
     fun convert() : Converter {
         var isConverted = false
 
+        // while the whole automaton isn't converted
         while (!isConverted) {
-            var isStateConverted = true
+            // we assume that we do not have to create new states
+            var hasToCreateNewStates = false
 
+            // checks if all the states are created
             stateTable.getItems().forEach {
-                if (it.goingToA.size > 1 || it.goingToB.size > 1)
-                    isStateConverted = false
-                else {
-                    // continue from here
-                }
-            }
 
-            if (isStateConverted)
-                isConverted = isStateConverted
+                if (stateTable.getItemByState(it.goingToA.joinToString(",")) == null) {
+                    hasToCreateNewStates = true
+                    createNewStateItem(it, true)
+                }
+
+                if (stateTable.getItemByState(it.goingToB.joinToString(",")) == null) {
+                    hasToCreateNewStates = true
+                    createNewStateItem(it, false)
+                }
+
+                // the conversion finishes when we don't have to create any other state
+                if (!hasToCreateNewStates)
+                    isConverted = true
+            }
         }
 
         return this
+    }
+
+    fun statesTableToAutomaton() : Automaton {
+        val automatonRules = arrayListOf<Rule>()
+
+        stateTable.getItems().forEach {
+            it.goingToA.forEach { stateA ->
+                newStates.add(stateA)
+            }
+
+            it.goingToB.forEach { stateB ->
+                newStates.add(stateB)
+            }
+
+            val stateGoingToA = it.goingToA.joinToString(",")
+            val stateGoingToB = it.goingToB.joinToString(",")
+            if (it.state.isNotEmpty() && stateGoingToA.isNotEmpty() && stateGoingToB.isNotEmpty()) {
+                var rule = Rule(it.state, 'a', stateGoingToA)
+                automatonRules.add(rule)
+
+                rule = Rule(it.state, 'b', stateGoingToB)
+                automatonRules.add(rule)
+            }
+        }
+
+        return Automaton(newStates.toTypedArray(), newFinalStates.toTypedArray(), automatonRules.toTypedArray())
+    }
+
+    private fun createNewStateItem(stateTableItem: StateTableItem, isNewStateGoingToA : Boolean) {
+
+        val newGoingToA: MutableSet<String>
+        val newGoingToB: MutableSet<String>
+        var newState = ""
+
+        if (isNewStateGoingToA) {
+            newState = stateTableItem.goingToA.joinToString(",")
+
+            newGoingToA = createState(stateTableItem.goingToA, isNewStateGoingToA)
+            newGoingToB = createState(stateTableItem.goingToB, false)
+        } else {
+            newState = stateTableItem.goingToB.joinToString(",")
+
+            newGoingToA = createState(stateTableItem.goingToA, true)
+            newGoingToB = createState(stateTableItem.goingToB, isNewStateGoingToA)
+        }
+
+        val newStateItem = StateTableItem(newState, newGoingToA, newGoingToB)
+
+        if (newState.isNotEmpty() && newGoingToA.joinToString(",").isNotEmpty()
+                && newGoingToB.joinToString(",").isNotEmpty())
+            stateTable.addItem(newStateItem)
+    }
+
+    private fun createState(goingTo : MutableSet<String>, isGoingToA : Boolean) : MutableSet<String> {
+        // creates the new state
+        val newGoingToState = mutableSetOf<String>()
+
+        goingTo.forEach { state ->
+            // gets the line of that states to see where it's going
+            val stateItem = stateTable.getItemByState(state)
+
+            if (stateItem != null) {
+                addFinalState(state, goingTo.joinToString(","))
+
+                if (isGoingToA)
+                    stateItem.goingToA.forEach { stateA ->
+                        newGoingToState.add(stateA)
+                    }
+                else
+                    stateItem.goingToB.forEach { stateB ->
+                        newGoingToState.add(stateB)
+                    }
+            }
+        }
+
+        return newGoingToState
+    }
+
+    private fun addFinalState(state : String, stateToAdd : String) {
+        if (automaton.getFinalStates().contains(state) && stateToAdd != "" && state != "")
+            newFinalStates.add(stateToAdd)
     }
 }
